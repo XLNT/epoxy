@@ -1,11 +1,13 @@
 import { run, ethers } from 'hardhat';
 
+import type { Greeter as GreeterContract } from '../typechain/Greeter';
+
 async function main() {
   await run('compile');
 
   // We get the contract to deploy
   const Greeter = await ethers.getContractFactory('Greeter');
-  const greeter = await Greeter.deploy('Hello, Hardhat!');
+  const greeter = (await Greeter.deploy('Hello, Hardhat!')) as GreeterContract;
 
   await greeter.deployed();
 
