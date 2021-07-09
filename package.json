@@ -6,6 +6,10 @@
   "author": "one of the many matts",
   "license": "Apache-2.0",
   "private": false,
+  "scripts": {
+    "build": "yarn hardhat compile",
+    "test": "yarn hardhat test"
+  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-solhint": "^2.0.0",
