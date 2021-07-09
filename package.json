@@ -7,6 +7,22 @@
   "license": "Apache-2.0",
   "private": false,
   "devDependencies": {
-    "hardhat": "^2.4.3"
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@types/chai": "^4.2.21",
+    "@types/mocha": "^8.2.3",
+    "@types/node": "^16.0.3",
+    "@typescript-eslint/eslint-plugin": "^4.28.2",
+    "@typescript-eslint/parser": "^4.28.2",
+    "chai": "^4.3.4",
+    "eslint": "^7.30.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.4.1",
+    "hardhat": "^2.4.3",
+    "prettier": "^2.3.2",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.5"
   }
 }
