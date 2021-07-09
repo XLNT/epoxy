@@ -1,0 +1,12 @@
+{
+  "name": "epoxy",
+  "version": "1.0.0",
+  "description": "an adhesive method for cultivating cohesive communities",
+  "repository": "https://github.com/xlnt/epoxy",
+  "author": "one of the many matts",
+  "license": "Apache-2.0",
+  "private": false,
+  "devDependencies": {
+    "hardhat": "^2.4.3"
+  }
+}
