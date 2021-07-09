@@ -11,37 +11,19 @@ import {
   PopulatedTransaction,
   BaseContract,
   ContractTransaction,
-  Overrides,
-  CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface GreeterInterface extends ethers.utils.Interface {
-  functions: {
-    "greet()": FunctionFragment;
-    "setGreeting(string)": FunctionFragment;
-  };
+interface EpoxyInterface extends ethers.utils.Interface {
+  functions: {};
 
-  encodeFunctionData(functionFragment: "greet", values?: undefined): string;
-  encodeFunctionData(functionFragment: "setGreeting", values: [string]): string;
-
-  decodeFunctionResult(functionFragment: "greet", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "setGreeting",
-    data: BytesLike
-  ): Result;
-
-  events: {
-    "Test()": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "Test"): EventFragment;
+  events: {};
 }
 
-export class Greeter extends BaseContract {
+export class Epoxy extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -82,49 +64,15 @@ export class Greeter extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: GreeterInterface;
+  interface: EpoxyInterface;
 
-  functions: {
-    greet(overrides?: CallOverrides): Promise<[string]>;
+  functions: {};
 
-    setGreeting(
-      _greeting: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-  };
+  callStatic: {};
 
-  greet(overrides?: CallOverrides): Promise<string>;
+  filters: {};
 
-  setGreeting(
-    _greeting: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  estimateGas: {};
 
-  callStatic: {
-    greet(overrides?: CallOverrides): Promise<string>;
-
-    setGreeting(_greeting: string, overrides?: CallOverrides): Promise<void>;
-  };
-
-  filters: {
-    Test(): TypedEventFilter<[], {}>;
-  };
-
-  estimateGas: {
-    greet(overrides?: CallOverrides): Promise<BigNumber>;
-
-    setGreeting(
-      _greeting: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    greet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    setGreeting(
-      _greeting: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-  };
+  populateTransaction: {};
 }

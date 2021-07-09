@@ -13,9 +13,9 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
-      name: "Greeter",
+      name: "Epoxy",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Greeter__factory>;
+    ): Promise<Contracts.Epoxy__factory>;
 
     // default types
     getContractFactory(
