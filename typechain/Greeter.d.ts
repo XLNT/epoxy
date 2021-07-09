@@ -34,7 +34,11 @@ interface GreeterInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
 
-  events: {};
+  events: {
+    "Test()": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "Test"): EventFragment;
 }
 
 export class Greeter extends BaseContract {
@@ -102,7 +106,9 @@ export class Greeter extends BaseContract {
     setGreeting(_greeting: string, overrides?: CallOverrides): Promise<void>;
   };
 
-  filters: {};
+  filters: {
+    Test(): TypedEventFilter<[], {}>;
+  };
 
   estimateGas: {
     greet(overrides?: CallOverrides): Promise<BigNumber>;
