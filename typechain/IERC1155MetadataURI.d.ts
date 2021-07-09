@@ -19,20 +19,14 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface EpoxyInterface extends ethers.utils.Interface {
+interface IERC1155MetadataURIInterface extends ethers.utils.Interface {
   functions: {
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
-    "created(uint256)": FunctionFragment;
-    "freeze(uint256[])": FunctionFragment;
-    "frozen(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
-    "mint(address[],uint256[],uint256[],bytes)": FunctionFragment;
-    "rip(address,uint256[],uint256[])": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
-    "setURI(uint256,string)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "uri(uint256)": FunctionFragment;
   };
@@ -46,28 +40,8 @@ interface EpoxyInterface extends ethers.utils.Interface {
     values: [string[], BigNumberish[]]
   ): string;
   encodeFunctionData(
-    functionFragment: "created",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "freeze",
-    values: [BigNumberish[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "frozen",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "mint",
-    values: [string[], BigNumberish[], BigNumberish[], BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "rip",
-    values: [string, BigNumberish[], BigNumberish[]]
   ): string;
   encodeFunctionData(
     functionFragment: "safeBatchTransferFrom",
@@ -82,10 +56,6 @@ interface EpoxyInterface extends ethers.utils.Interface {
     values: [string, boolean]
   ): string;
   encodeFunctionData(
-    functionFragment: "setURI",
-    values: [BigNumberish, string]
-  ): string;
-  encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
@@ -96,15 +66,10 @@ interface EpoxyInterface extends ethers.utils.Interface {
     functionFragment: "balanceOfBatch",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "created", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "freeze", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "frozen", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "rip", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "safeBatchTransferFrom",
     data: BytesLike
@@ -117,7 +82,6 @@ interface EpoxyInterface extends ethers.utils.Interface {
     functionFragment: "setApprovalForAll",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setURI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
@@ -137,7 +101,7 @@ interface EpoxyInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "URI"): EventFragment;
 }
 
-export class Epoxy extends BaseContract {
+export class IERC1155MetadataURI extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -178,7 +142,7 @@ export class Epoxy extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: EpoxyInterface;
+  interface: IERC1155MetadataURIInterface;
 
   functions: {
     balanceOf(
@@ -193,35 +157,11 @@ export class Epoxy extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber[]]>;
 
-    created(id: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
-
-    freeze(
-      ids: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    frozen(id: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
-
     isApprovedForAll(
       account: string,
       operator: string,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
-
-    mint(
-      tos: string[],
-      ids: BigNumberish[],
-      amounts: BigNumberish[],
-      data: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    rip(
-      account: string,
-      ids: BigNumberish[],
-      amounts: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
 
     safeBatchTransferFrom(
       from: string,
@@ -247,12 +187,6 @@ export class Epoxy extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setURI(
-      id: BigNumberish,
-      _newUri: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -273,35 +207,11 @@ export class Epoxy extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber[]>;
 
-  created(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
-
-  freeze(
-    ids: BigNumberish[],
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  frozen(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
-
   isApprovedForAll(
     account: string,
     operator: string,
     overrides?: CallOverrides
   ): Promise<boolean>;
-
-  mint(
-    tos: string[],
-    ids: BigNumberish[],
-    amounts: BigNumberish[],
-    data: BytesLike,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  rip(
-    account: string,
-    ids: BigNumberish[],
-    amounts: BigNumberish[],
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
 
   safeBatchTransferFrom(
     from: string,
@@ -327,12 +237,6 @@ export class Epoxy extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setURI(
-    id: BigNumberish,
-    _newUri: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   supportsInterface(
     interfaceId: BytesLike,
     overrides?: CallOverrides
@@ -353,32 +257,11 @@ export class Epoxy extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
 
-    created(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
-
-    freeze(ids: BigNumberish[], overrides?: CallOverrides): Promise<void>;
-
-    frozen(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
-
     isApprovedForAll(
       account: string,
       operator: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    mint(
-      tos: string[],
-      ids: BigNumberish[],
-      amounts: BigNumberish[],
-      data: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    rip(
-      account: string,
-      ids: BigNumberish[],
-      amounts: BigNumberish[],
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     safeBatchTransferFrom(
       from: string,
@@ -401,12 +284,6 @@ export class Epoxy extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setURI(
-      id: BigNumberish,
-      _newUri: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -481,34 +358,10 @@ export class Epoxy extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    created(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    freeze(
-      ids: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    frozen(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
     isApprovedForAll(
       account: string,
       operator: string,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    mint(
-      tos: string[],
-      ids: BigNumberish[],
-      amounts: BigNumberish[],
-      data: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    rip(
-      account: string,
-      ids: BigNumberish[],
-      amounts: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     safeBatchTransferFrom(
@@ -532,12 +385,6 @@ export class Epoxy extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setURI(
-      id: BigNumberish,
-      _newUri: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -562,40 +409,10 @@ export class Epoxy extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    created(
-      id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    freeze(
-      ids: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    frozen(
-      id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     isApprovedForAll(
       account: string,
       operator: string,
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    mint(
-      tos: string[],
-      ids: BigNumberish[],
-      amounts: BigNumberish[],
-      data: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    rip(
-      account: string,
-      ids: BigNumberish[],
-      amounts: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     safeBatchTransferFrom(
@@ -619,12 +436,6 @@ export class Epoxy extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setURI(
-      id: BigNumberish,
-      _newUri: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
