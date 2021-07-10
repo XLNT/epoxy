@@ -274,6 +274,20 @@ describe('Epoxy', function () {
       it('Epoxy::setURI rejects invalid input', async () => {
         await expect(ctx.epoxy.setURI(ids, [SPECIFIC_URI])).to.be.revertedWith('InvalidInput');
       });
+
+      it('denys non-managers the ability to set a new manager', async () => {
+        await expect(
+          ctx.epoxy.connect(ctx.accounts[1]).setManager(ids, ctx.accounts[1].address),
+        ).to.be.revertedWith('IsNotManager');
+      });
+
+      it('allows managers to set a new manager', async () => {
+        await ctx.epoxy.setManager(ids, ctx.accounts[1].address).then((tx) => tx.wait());
+
+        expect(await ctx.epoxy.manager(ids[0])).to.equal(ctx.accounts[1].address);
+
+        await expect(ctx.epoxy.setManager([ids[0]], manager)).to.be.revertedWith('IsNotManager');
+      });
     });
 
     context('uris', () => {
