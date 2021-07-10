@@ -29,12 +29,13 @@ interface EpoxyInterface extends ethers.utils.Interface {
     "freeze(uint256[])": FunctionFragment;
     "frozen(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
+    "manager(uint256)": FunctionFragment;
     "mint(address[],uint256[],uint256[],string[],bytes,address)": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setManager(uint256[],address)": FunctionFragment;
-    "setURI(uint256,string)": FunctionFragment;
+    "setURI(uint256[],string[])": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "uri(uint256)": FunctionFragment;
   };
@@ -69,6 +70,10 @@ interface EpoxyInterface extends ethers.utils.Interface {
     values: [string, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "manager",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "mint",
     values: [
       string[],
@@ -97,7 +102,7 @@ interface EpoxyInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setURI",
-    values: [BigNumberish, string]
+    values: [BigNumberish[], string[]]
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
@@ -119,6 +124,7 @@ interface EpoxyInterface extends ethers.utils.Interface {
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "manager", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "safeBatchTransferFrom",
@@ -233,6 +239,8 @@ export class Epoxy extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    manager(id: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+
     mint(
       tos: string[],
       ids: BigNumberish[],
@@ -274,8 +282,8 @@ export class Epoxy extends BaseContract {
     ): Promise<ContractTransaction>;
 
     setURI(
-      id: BigNumberish,
-      _newUri: string,
+      ids: BigNumberish[],
+      newUris: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -323,6 +331,8 @@ export class Epoxy extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  manager(id: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
   mint(
     tos: string[],
     ids: BigNumberish[],
@@ -364,8 +374,8 @@ export class Epoxy extends BaseContract {
   ): Promise<ContractTransaction>;
 
   setURI(
-    id: BigNumberish,
-    _newUri: string,
+    ids: BigNumberish[],
+    newUris: string[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -410,6 +420,8 @@ export class Epoxy extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    manager(id: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
     mint(
       tos: string[],
       ids: BigNumberish[],
@@ -451,8 +463,8 @@ export class Epoxy extends BaseContract {
     ): Promise<void>;
 
     setURI(
-      id: BigNumberish,
-      _newUri: string,
+      ids: BigNumberish[],
+      newUris: string[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -551,6 +563,8 @@ export class Epoxy extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    manager(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
     mint(
       tos: string[],
       ids: BigNumberish[],
@@ -592,8 +606,8 @@ export class Epoxy extends BaseContract {
     ): Promise<BigNumber>;
 
     setURI(
-      id: BigNumberish,
-      _newUri: string,
+      ids: BigNumberish[],
+      newUris: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -648,6 +662,11 @@ export class Epoxy extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    manager(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     mint(
       tos: string[],
       ids: BigNumberish[],
@@ -689,8 +708,8 @@ export class Epoxy extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     setURI(
-      id: BigNumberish,
-      _newUri: string,
+      ids: BigNumberish[],
+      newUris: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

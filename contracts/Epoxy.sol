@@ -35,7 +35,7 @@ contract Epoxy is ERC1155 {
     address manager
   ) public {
     // _mintBatch will check that ids and amounts are identical, but we also want to check uris length
-    if (uris.length != ids.length) revert InvalidInput('Epoxy: uris and ids length mismatch');
+    if (ids.length != uris.length) revert InvalidInput('Epoxy: ids and uris length mismatch');
 
     // for each sticker set...
     for (uint256 i = 0; i < ids.length; i++) {
@@ -73,20 +73,6 @@ contract Epoxy is ERC1155 {
     }
   }
 
-  // clears the manager for a given set, freezing future mints
-  function freeze(uint256[] memory ids) public {
-    setManager(ids, address(0));
-  }
-
-  // sets the manager for a list of ids, given that the sender is the active manager of every set
-  function setManager(uint256[] memory ids, address _manager) public {
-    for (uint256 i = 0; i < ids.length; i++) {
-      uint256 id = ids[i];
-      if (_msgSender() != _managers[id]) revert IsNotManager(_msgSender(), id);
-      _managers[id] = _manager;
-    }
-  }
-
   function burn(
     address account,
     uint256[] memory ids,
@@ -102,12 +88,38 @@ contract Epoxy is ERC1155 {
     _burnBatch(account, ids, amounts);
   }
 
-  // managers can change the uri of a set while unfrozen
-  function setURI(uint256 id, string memory _newUri) public {
-    if (frozen(id)) revert IsFrozen(id);
-    if (_msgSender() != _managers[id]) revert IsNotManager(_msgSender(), id);
+  // clears the manager for a given set, freezing future mints
+  function freeze(uint256[] memory ids) public {
+    setManager(ids, address(0));
+  }
 
-    _setURI(_newUri);
+  // sets the manager for a list of ids, given that the sender is the active manager of every set
+  function setManager(uint256[] memory ids, address _manager) public {
+    for (uint256 i = 0; i < ids.length; i++) {
+      uint256 id = ids[i];
+
+      // technically this line is redundant, but clarity over efficiency for now
+      if (frozen(id)) revert IsFrozen(id);
+      if (_msgSender() != _managers[id]) revert IsNotManager(_msgSender(), id);
+
+      _managers[id] = _manager;
+    }
+  }
+
+  // managers can change the uri of a set while unfrozen
+  function setURI(uint256[] memory ids, string[] memory newUris) public {
+    if (ids.length != newUris.length) revert InvalidInput('Epoxy: ids and uris length mismatch');
+
+    for (uint256 i = 0; i < ids.length; i++) {
+      uint256 id = ids[i];
+
+      if (frozen(id)) revert IsFrozen(id);
+      if (_msgSender() != _managers[id]) revert IsNotManager(_msgSender(), id);
+
+      string memory newUri = newUris[i];
+      _uris[id] = newUri;
+      emit URI(newUri, id);
+    }
   }
 
   // returns the specific uri of a set or the Epoxy base uri
@@ -122,6 +134,10 @@ contract Epoxy is ERC1155 {
   }
 
   function frozen(uint256 id) public view returns (bool) {
-    return created(id) && _managers[id] != address(0);
+    return created(id) && _managers[id] == address(0);
+  }
+
+  function manager(uint256 id) public view returns (address) {
+    return _managers[id];
   }
 }
