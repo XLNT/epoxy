@@ -3,28 +3,40 @@ pragma solidity ^0.8.0;
 
 import 'hardhat/console.sol';
 import '@openzeppelin/contracts/token/ERC1155/ERC1155.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 contract Epoxy is ERC1155 {
   // Epoxy allows individual sets to override the standard URI
   mapping(uint256 => string) private _uris;
   // Epoxy allows unfrozen sets to be managed
   mapping(uint256 => address) private _managers;
-  // tracks whether a tokenId
+  // tracks whether a tokenId has been used before
   mapping(uint256 => bool) private _created;
+
+  // the base currency of the Epoxy protocol
+  IERC20 public currency;
 
   error InvalidInput(string);
   error IsFrozen(uint256 id);
   error IsNotManager(address caller, uint256 id);
 
-  constructor(string memory _baseUri) ERC1155(_baseUri) {}
+  constructor(string memory _baseUri, IERC20 _currency) ERC1155(_baseUri) {
+    currency = _currency;
+  }
 
   // mint an equal amount of stickers per-set to a list of addresses
+  // TODO: make this transfer currency to self
   function mint(
     address[] memory tos,
     uint256[] memory ids,
     uint256[] memory amounts,
-    bytes memory data
+    string[] memory uris,
+    bytes memory data,
+    address manager
   ) public {
+    // _mintBatch will check that ids and amounts are identical, but we also want to check uris length
+    if (uris.length != ids.length) revert InvalidInput('Epoxy: uris and ids length mismatch');
+
     // for each sticker set...
     for (uint256 i = 0; i < ids.length; i++) {
       uint256 id = ids[i];
@@ -33,27 +45,45 @@ contract Epoxy is ERC1155 {
       if (frozen(id)) revert IsFrozen(id);
 
       if (created(id)) {
-        // if the set has already been created, check for manager permission to mint more
+        // if the set has already been created, check for manager permission to modify it
         if (_msgSender() != _managers[id]) revert IsNotManager(_msgSender(), id);
       } else {
-        // otherwise, mark the set as created
+        // otherwise, this block is only executed on the _creation_ of a set
+
+        // mark the set as created
         _created[id] = true;
+        // assign manager to the set if provided
+        if (manager != address(0)) {
+          _managers[id] = manager;
+        }
+      }
+
+      // here, we have permission to modify the set
+
+      // if the arguments provided a uri for this set, use it
+      if (bytes(uris[i]).length > 0) {
+        _uris[id] = uris[i];
       }
     }
 
     // for each address receiving stickers...
     for (uint256 t = 0; t < tos.length; t++) {
-      // mint the stickers
+      // mint the same sticker sets and amounts
       _mintBatch(tos[t], ids, amounts, data);
     }
   }
 
   // clears the manager for a given set, freezing future mints
   function freeze(uint256[] memory ids) public {
+    setManager(ids, address(0));
+  }
+
+  // sets the manager for a list of ids, given that the sender is the active manager of every set
+  function setManager(uint256[] memory ids, address _manager) public {
     for (uint256 i = 0; i < ids.length; i++) {
       uint256 id = ids[i];
       if (_msgSender() != _managers[id]) revert IsNotManager(_msgSender(), id);
-      _managers[id] = address(0);
+      _managers[id] = _manager;
     }
   }
 
@@ -67,7 +97,7 @@ contract Epoxy is ERC1155 {
       'ERC1155: caller is not owner nor approved'
     );
 
-    // TODO: vault behavior
+    // TODO: send currency to account
 
     _burnBatch(account, ids, amounts);
   }
