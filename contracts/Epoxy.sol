@@ -32,7 +32,7 @@ contract Epoxy is ERC1155 {
     uint256[] memory amounts,
     string[] memory uris,
     bytes memory data,
-    address manager
+    address _manager
   ) public {
     // _mintBatch will check that ids and amounts are identical, but we also want to check uris length
     if (ids.length != uris.length) revert InvalidInput('Epoxy: ids and uris length mismatch');
@@ -53,8 +53,8 @@ contract Epoxy is ERC1155 {
         // mark the set as created
         _created[id] = true;
         // assign manager to the set if provided
-        if (manager != address(0)) {
-          _managers[id] = manager;
+        if (_manager != address(0)) {
+          _managers[id] = _manager;
         }
       }
 

@@ -247,7 +247,7 @@ export class Epoxy extends BaseContract {
       amounts: BigNumberish[],
       uris: string[],
       data: BytesLike,
-      manager: string,
+      _manager: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -339,7 +339,7 @@ export class Epoxy extends BaseContract {
     amounts: BigNumberish[],
     uris: string[],
     data: BytesLike,
-    manager: string,
+    _manager: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -428,7 +428,7 @@ export class Epoxy extends BaseContract {
       amounts: BigNumberish[],
       uris: string[],
       data: BytesLike,
-      manager: string,
+      _manager: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -571,7 +571,7 @@ export class Epoxy extends BaseContract {
       amounts: BigNumberish[],
       uris: string[],
       data: BytesLike,
-      manager: string,
+      _manager: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -673,7 +673,7 @@ export class Epoxy extends BaseContract {
       amounts: BigNumberish[],
       uris: string[],
       data: BytesLike,
-      manager: string,
+      _manager: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
