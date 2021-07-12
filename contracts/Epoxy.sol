@@ -9,8 +9,8 @@ import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 contract Epoxy is ERC1155 {
   using SafeERC20 for IERC20;
 
-  event Print(address indexed from, uint256 value);
-  event Redeem(address indexed from, uint256 value);
+  event Deposit(address indexed from, uint256 value);
+  event Withdraw(address indexed from, uint256 value);
 
   error InvalidInput(string);
   error IsFrozen(uint256 id);
@@ -83,7 +83,7 @@ contract Epoxy is ERC1155 {
 
     // transfer currency from sender to Epoxy
     currency.safeTransferFrom(_msgSender(), address(this), value);
-    emit Print(_msgSender(), value);
+    emit Deposit(_msgSender(), value);
 
     // for each address receiving stickers...
     for (uint256 t = 0; t < tos.length; t++) {
@@ -106,7 +106,7 @@ contract Epoxy is ERC1155 {
     uint256 value = fee * sumArray(amounts);
 
     currency.transfer(_msgSender(), value);
-    emit Redeem(_msgSender(), value);
+    emit Withdraw(_msgSender(), value);
 
     _burnBatch(account, ids, amounts);
   }

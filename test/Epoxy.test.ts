@@ -98,7 +98,7 @@ describe('Epoxy', function () {
   context('without token balance', () => {
     it('reverts in Epoxy::mint', async () => {
       await withEpoxy(async ({ epoxy, currency, accounts }) => {
-        await currency.burn(CURRENCY_BALANCE);
+        await currency.burn(CURRENCY_BALANCE).then((tx) => tx.wait());
 
         await expect(
           epoxy.mint(
@@ -370,15 +370,92 @@ describe('Epoxy', function () {
         expect(await ctx.epoxy.uri('0x2')).to.equal(BASE_URI);
       });
     });
-
-    context('events', () => {
-      it('emits the Print event');
-    });
   });
 
   context('Epoxy::burn', () => {
-    context('events', () => {
-      it('emits the Redeem event');
+    it('should revert without allowance', async () => {
+      await withEpoxy(async ({ epoxy, currency, accounts }) => {
+        await currency.decreaseAllowance(epoxy.address, CURRENCY_BALANCE).then((tx) => tx.wait());
+
+        await expect(
+          epoxy.connect(accounts[0]).burn(accounts[0].address, ['0x1'], [AMOUNT]),
+        ).to.be.revertedWith('ERC20: transfer amount exceeds balance');
+      });
+    });
+
+    it('should revert without balance', async () => {
+      await withEpoxy(async ({ epoxy, accounts }) => {
+        await expect(
+          epoxy.connect(accounts[0]).burn(accounts[0].address, ['0x1'], [AMOUNT]),
+        ).to.be.revertedWith('ERC20: transfer amount exceeds balance');
+      });
+    });
+
+    it('should revert without owned ids', async () => {
+      await withEpoxy(async ({ epoxy, sender, accounts }) => {
+        await epoxy
+          .mint(
+            [accounts[0].address],
+            ['0x1'],
+            [AMOUNT],
+            [''],
+            EMPTY_DATA,
+            ethers.constants.AddressZero,
+          )
+          .then((tx) => tx.wait());
+
+        await epoxy
+          .connect(accounts[1])
+          .setApprovalForAll(sender.address, true)
+          .then((tx) => tx.wait());
+
+        await expect(epoxy.burn(accounts[1].address, ['0x1'], [AMOUNT])).to.be.revertedWith(
+          'ERC1155: burn amount exceeds balance',
+        );
+      });
+    });
+  });
+
+  context('Epoxy::events', () => {
+    it('emits the Deposit event', async () => {
+      await withEpoxy(async ({ epoxy, sender, accounts }) => {
+        await expect(
+          epoxy.mint(
+            [accounts[0].address],
+            ['0x1'],
+            [AMOUNT],
+            [''],
+            EMPTY_DATA,
+            ethers.constants.AddressZero,
+          ),
+        )
+          .to.emit(epoxy, 'Deposit')
+          .withArgs(sender.address, AMOUNT * FEE);
+      });
+    });
+
+    it('emits the Withdraw event', async () => {
+      await withEpoxy(async ({ epoxy, sender, accounts }) => {
+        await epoxy
+          .mint(
+            [accounts[0].address],
+            ['0x1'],
+            [AMOUNT],
+            [''],
+            EMPTY_DATA,
+            ethers.constants.AddressZero,
+          )
+          .then((tx) => tx.wait());
+
+        await epoxy
+          .connect(accounts[0])
+          .setApprovalForAll(sender.address, true)
+          .then((tx) => tx.wait());
+
+        await expect(epoxy.burn(accounts[0].address, ['0x1'], [AMOUNT]))
+          .to.emit(epoxy, 'Withdraw')
+          .withArgs(sender.address, AMOUNT * FEE);
+      });
     });
   });
 });
