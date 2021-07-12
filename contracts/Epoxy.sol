@@ -4,8 +4,23 @@ pragma solidity ^0.8.0;
 import 'hardhat/console.sol';
 import '@openzeppelin/contracts/token/ERC1155/ERC1155.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 contract Epoxy is ERC1155 {
+  using SafeERC20 for IERC20;
+
+  event Print(address indexed from, uint256 value);
+  event Redeem(address indexed from, uint256 value);
+
+  error InvalidInput(string);
+  error IsFrozen(uint256 id);
+  error IsNotManager(address caller, uint256 id);
+
+  // Epoxy base currency
+  IERC20 public currency;
+  // Epoxy base fee
+  uint256 public fee;
+
   // Epoxy allows individual sets to override the standard URI
   mapping(uint256 => string) private _uris;
   // Epoxy allows unfrozen sets to be managed
@@ -13,19 +28,16 @@ contract Epoxy is ERC1155 {
   // tracks whether a tokenId has been used before
   mapping(uint256 => bool) private _created;
 
-  // the base currency of the Epoxy protocol
-  IERC20 public currency;
-
-  error InvalidInput(string);
-  error IsFrozen(uint256 id);
-  error IsNotManager(address caller, uint256 id);
-
-  constructor(string memory _baseUri, IERC20 _currency) ERC1155(_baseUri) {
+  constructor(
+    string memory _baseUri,
+    IERC20 _currency,
+    uint256 _fee
+  ) ERC1155(_baseUri) {
     currency = _currency;
+    fee = _fee;
   }
 
   // mint an equal amount of stickers per-set to a list of addresses
-  // TODO: make this transfer currency to self
   function mint(
     address[] memory tos,
     uint256[] memory ids,
@@ -66,6 +78,13 @@ contract Epoxy is ERC1155 {
       }
     }
 
+    // TODO: calculate value of mint
+    uint256 value = 10;
+
+    // transfer currency from sender to Epoxy
+    currency.safeTransferFrom(_msgSender(), address(this), value);
+    emit Print(_msgSender(), value);
+
     // for each address receiving stickers...
     for (uint256 t = 0; t < tos.length; t++) {
       // mint the same sticker sets and amounts
@@ -83,7 +102,11 @@ contract Epoxy is ERC1155 {
       'ERC1155: caller is not owner nor approved'
     );
 
-    // TODO: send currency to account
+    // TODO: calculate value of burn
+    uint256 value = 10;
+
+    currency.transfer(_msgSender(), value);
+    emit Redeem(_msgSender(), value);
 
     _burnBatch(account, ids, amounts);
   }

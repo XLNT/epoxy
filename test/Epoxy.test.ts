@@ -9,6 +9,7 @@ const BASE_URI = 'https://example.com/{id}.json';
 const SPECIFIC_URI = 'https://specific.example.com/{id}.json';
 const EMPTY_DATA = ethers.utils.arrayify(0);
 const AMOUNT = 10;
+const FEE = 10;
 
 interface Ctx {
   sender: SignerWithAddress;
@@ -24,7 +25,7 @@ async function makeEpoxy(): Promise<Ctx> {
   const currency = (await Currency.deploy('Test Currency', 'CURR')) as IERC20;
 
   const Epoxy = await ethers.getContractFactory('Epoxy');
-  const epoxy = (await Epoxy.deploy(BASE_URI, currency.address)) as EpoxyContract;
+  const epoxy = (await Epoxy.deploy(BASE_URI, currency.address, FEE)) as EpoxyContract;
   await epoxy.deployed();
 
   return {

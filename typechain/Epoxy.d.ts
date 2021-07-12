@@ -24,9 +24,9 @@ interface EpoxyInterface extends ethers.utils.Interface {
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
     "burn(address,uint256[],uint256[])": FunctionFragment;
-    "c_0x130b8ebd(bytes32)": FunctionFragment;
     "created(uint256)": FunctionFragment;
     "currency()": FunctionFragment;
+    "fee()": FunctionFragment;
     "freeze(uint256[])": FunctionFragment;
     "frozen(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
@@ -54,14 +54,11 @@ interface EpoxyInterface extends ethers.utils.Interface {
     values: [string, BigNumberish[], BigNumberish[]]
   ): string;
   encodeFunctionData(
-    functionFragment: "c_0x130b8ebd",
-    values: [BytesLike]
-  ): string;
-  encodeFunctionData(
     functionFragment: "created",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "currency", values?: undefined): string;
+  encodeFunctionData(functionFragment: "fee", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "freeze",
     values: [BigNumberish[]]
@@ -121,12 +118,9 @@ interface EpoxyInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0x130b8ebd",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "created", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "currency", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "fee", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "freeze", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "frozen", data: BytesLike): Result;
   decodeFunctionResult(
@@ -157,12 +151,16 @@ interface EpoxyInterface extends ethers.utils.Interface {
 
   events: {
     "ApprovalForAll(address,address,bool)": EventFragment;
+    "Print(address,uint256)": EventFragment;
+    "Redeem(address,uint256)": EventFragment;
     "TransferBatch(address,address,address,uint256[],uint256[])": EventFragment;
     "TransferSingle(address,address,address,uint256,uint256)": EventFragment;
     "URI(string,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Print"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Redeem"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferBatch"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferSingle"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "URI"): EventFragment;
@@ -231,14 +229,11 @@ export class Epoxy extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    c_0x130b8ebd(
-      c__0x130b8ebd: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
     created(id: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
 
     currency(overrides?: CallOverrides): Promise<[string]>;
+
+    fee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     freeze(
       ids: BigNumberish[],
@@ -328,14 +323,11 @@ export class Epoxy extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  c_0x130b8ebd(
-    c__0x130b8ebd: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   created(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
   currency(overrides?: CallOverrides): Promise<string>;
+
+  fee(overrides?: CallOverrides): Promise<BigNumber>;
 
   freeze(
     ids: BigNumberish[],
@@ -425,14 +417,11 @@ export class Epoxy extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    c_0x130b8ebd(
-      c__0x130b8ebd: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     created(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
     currency(overrides?: CallOverrides): Promise<string>;
+
+    fee(overrides?: CallOverrides): Promise<BigNumber>;
 
     freeze(ids: BigNumberish[], overrides?: CallOverrides): Promise<void>;
 
@@ -510,6 +499,22 @@ export class Epoxy extends BaseContract {
       { account: string; operator: string; approved: boolean }
     >;
 
+    Print(
+      from?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { from: string; value: BigNumber }
+    >;
+
+    Redeem(
+      from?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { from: string; value: BigNumber }
+    >;
+
     TransferBatch(
       operator?: string | null,
       from?: string | null,
@@ -570,14 +575,11 @@ export class Epoxy extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    c_0x130b8ebd(
-      c__0x130b8ebd: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     created(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     currency(overrides?: CallOverrides): Promise<BigNumber>;
+
+    fee(overrides?: CallOverrides): Promise<BigNumber>;
 
     freeze(
       ids: BigNumberish[],
@@ -668,17 +670,14 @@ export class Epoxy extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    c_0x130b8ebd(
-      c__0x130b8ebd: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     created(
       id: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     currency(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    fee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     freeze(
       ids: BigNumberish[],
