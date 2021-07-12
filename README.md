@@ -1,6 +1,10 @@
-# epoxy
+# Epoxy
 
 an adhesive method for cultivating cohesive communities
+
+## Litepaper
+
+For a written description of what Epoxy does, check out the [Litepaper](https://www.notion.so/ajadams/Epoxy-Litepaper-755cc79c39104e4d819abf5f05ac7e96).
 
 ## Usage & Getting Started
 
@@ -14,6 +18,10 @@ yarn hardhat run scripts/deploy-epoxy.ts
 ```
 
 ## Author Notes
+
+### mint/burn naming
+
+I currently overload the mint/burn vocabulary usually found in protocols, though i may change it to something like print/rip or print/redeem for extra fun.
 
 ### the `mint` function
 
