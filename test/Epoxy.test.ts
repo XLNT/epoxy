@@ -2,8 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-import { Epoxy as EpoxyContract } from '../typechain/Epoxy';
-import type { IERC20 } from '../typechain/IERC20';
+import { Epoxy, Epoxy as EpoxyContract } from '../typechain/Epoxy';
 import type { ERC20PresetMinterPauser } from '../typechain/ERC20PresetMinterPauser';
 
 const BASE_URI = 'https://example.com/{id}.json';
@@ -16,7 +15,7 @@ const CURRENCY_BALANCE = 1000000;
 interface Ctx {
   sender: SignerWithAddress;
   accounts: SignerWithAddress[];
-  currency: IERC20;
+  currency: ERC20PresetMinterPauser;
   epoxy: EpoxyContract;
 }
 
@@ -74,6 +73,44 @@ describe('Epoxy', function () {
 
     it('should support ERC1155Metadata_URI interface', async function () {
       expect(await epoxy.supportsInterface('0x0e89341c')).to.be.true;
+    });
+  });
+
+  context('without token allowance', () => {
+    it('reverts in Epoxy::mint', async () => {
+      await withEpoxy(async ({ epoxy, currency, accounts }) => {
+        await currency.decreaseAllowance(epoxy.address, CURRENCY_BALANCE).then((tx) => tx.wait());
+
+        await expect(
+          epoxy.mint(
+            [accounts[0].address],
+            ['0x1'],
+            [AMOUNT],
+            [''],
+            EMPTY_DATA,
+            ethers.constants.AddressZero,
+          ),
+        ).to.be.revertedWith('ERC20: transfer amount exceeds allowance');
+      });
+    });
+  });
+
+  context('without token balance', () => {
+    it('reverts in Epoxy::mint', async () => {
+      await withEpoxy(async ({ epoxy, currency, accounts }) => {
+        await currency.burn(CURRENCY_BALANCE);
+
+        await expect(
+          epoxy.mint(
+            [accounts[0].address],
+            ['0x1'],
+            [AMOUNT],
+            [''],
+            EMPTY_DATA,
+            ethers.constants.AddressZero,
+          ),
+        ).to.be.revertedWith('ERC20: transfer amount exceeds balance');
+      });
     });
   });
 
