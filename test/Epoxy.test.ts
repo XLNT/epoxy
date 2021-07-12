@@ -4,12 +4,14 @@ import { ethers } from 'hardhat';
 
 import { Epoxy as EpoxyContract } from '../typechain/Epoxy';
 import type { IERC20 } from '../typechain/IERC20';
+import type { ERC20PresetMinterPauser } from '../typechain/ERC20PresetMinterPauser';
 
 const BASE_URI = 'https://example.com/{id}.json';
 const SPECIFIC_URI = 'https://specific.example.com/{id}.json';
 const EMPTY_DATA = ethers.utils.arrayify(0);
 const AMOUNT = 10;
 const FEE = 10;
+const CURRENCY_BALANCE = 1000000;
 
 interface Ctx {
   sender: SignerWithAddress;
@@ -22,11 +24,28 @@ async function makeEpoxy(): Promise<Ctx> {
   const [sender, ...accounts] = await ethers.getSigners();
 
   const Currency = await ethers.getContractFactory('ERC20PresetMinterPauser');
-  const currency = (await Currency.deploy('Test Currency', 'CURR')) as IERC20;
+  const currency = (await Currency.deploy('Test Currency', 'CURR')) as ERC20PresetMinterPauser;
 
   const Epoxy = await ethers.getContractFactory('Epoxy');
   const epoxy = (await Epoxy.deploy(BASE_URI, currency.address, FEE)) as EpoxyContract;
   await epoxy.deployed();
+
+  // give accounts currency
+  await Promise.all(
+    [sender, ...accounts].map((to) =>
+      currency.mint(to.address, CURRENCY_BALANCE).then((tx) => tx.wait()),
+    ),
+  );
+
+  // approve contract
+  await Promise.all(
+    [sender, ...accounts].map((to) =>
+      currency
+        .connect(to)
+        .increaseAllowance(epoxy.address, CURRENCY_BALANCE)
+        .then((tx) => tx.wait()),
+    ),
+  );
 
   return {
     sender,
@@ -130,6 +149,11 @@ describe('Epoxy', function () {
             expect(await ctx.epoxy.balanceOf(account, id)).to.equal(AMOUNT);
           }
         }
+
+        const expectedValue = FEE * tos.length * ids.reduce((memo) => memo + AMOUNT, 0);
+        expect(await ctx.currency.balanceOf(ctx.sender.address)).to.equal(
+          CURRENCY_BALANCE - expectedValue,
+        );
       });
 
       it('shows the sets as created', async () => {
@@ -295,7 +319,7 @@ describe('Epoxy', function () {
       let ctx: Ctx;
       before(() => makeEpoxy().then((_ctx) => (ctx = _ctx)));
 
-      it('should allow the setting of specific uris', async () => {
+      it('allows the setting of specific uris', async () => {
         const tos = [ctx.accounts[1].address];
         const ids = ['0x1'];
         const amounts = [10];
@@ -308,6 +332,16 @@ describe('Epoxy', function () {
         expect(await ctx.epoxy.uri('0x1')).to.equal(SPECIFIC_URI);
         expect(await ctx.epoxy.uri('0x2')).to.equal(BASE_URI);
       });
+    });
+
+    context('events', () => {
+      it('emits the Print event');
+    });
+  });
+
+  context('Epoxy::burn', () => {
+    context('events', () => {
+      it('emits the Redeem event');
     });
   });
 });

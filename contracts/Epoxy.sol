@@ -78,8 +78,8 @@ contract Epoxy is ERC1155 {
       }
     }
 
-    // TODO: calculate value of mint
-    uint256 value = 10;
+    // calculate value of the mint transaction
+    uint256 value = fee * tos.length * sumArray(amounts);
 
     // transfer currency from sender to Epoxy
     currency.safeTransferFrom(_msgSender(), address(this), value);
@@ -102,8 +102,8 @@ contract Epoxy is ERC1155 {
       'ERC1155: caller is not owner nor approved'
     );
 
-    // TODO: calculate value of burn
-    uint256 value = 10;
+    // calculate value of burn transaction
+    uint256 value = fee * sumArray(amounts);
 
     currency.transfer(_msgSender(), value);
     emit Redeem(_msgSender(), value);
@@ -162,5 +162,12 @@ contract Epoxy is ERC1155 {
 
   function manager(uint256 id) public view returns (address) {
     return _managers[id];
+  }
+
+  function sumArray(uint256[] memory _arr) internal pure returns (uint256 sum_) {
+    sum_ = 0;
+    for (uint256 i = 0; i < _arr.length; i++) {
+      sum_ += _arr[i];
+    }
   }
 }
