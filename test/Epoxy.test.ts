@@ -2,7 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-import { Epoxy, Epoxy as EpoxyContract } from '../typechain/Epoxy';
+import { Epoxy as EpoxyContract } from '../typechain/Epoxy';
 import type { ERC20PresetMinterPauser } from '../typechain/ERC20PresetMinterPauser';
 
 const BASE_URI = 'https://example.com/{id}.json';
