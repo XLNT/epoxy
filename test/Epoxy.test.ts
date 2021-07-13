@@ -373,6 +373,14 @@ describe('Epoxy', function () {
   });
 
   context('Epoxy::burn', () => {
+    it('should revert if not approved', async () => {
+      await withEpoxy(async ({ epoxy, accounts }) => {
+        await expect(epoxy.burn(accounts[0].address, ['0x1'], [AMOUNT])).to.be.revertedWith(
+          'ERC1155: caller is not owner nor approved',
+        );
+      });
+    });
+
     it('should revert without allowance', async () => {
       await withEpoxy(async ({ epoxy, currency, accounts }) => {
         await currency.decreaseAllowance(epoxy.address, CURRENCY_BALANCE).then((tx) => tx.wait());

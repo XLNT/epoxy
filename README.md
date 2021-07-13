@@ -2,6 +2,8 @@
 
 an adhesive method for cultivating cohesive communities
 
+[![Coverage Status](https://coveralls.io/repos/github/XLNT/epoxy/badge.svg?branch=main)](https://coveralls.io/github/XLNT/epoxy?branch=main)
+
 ## Litepaper
 
 For a written description of what Epoxy does, check out the [Litepaper](https://www.notion.so/ajadams/Epoxy-Litepaper-755cc79c39104e4d819abf5f05ac7e96).
