@@ -24,7 +24,6 @@ interface EpoxyInterface extends ethers.utils.Interface {
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
     "burn(address,uint256[],uint256[])": FunctionFragment;
-    "c_0x130b8ebd(bytes32)": FunctionFragment;
     "created(uint256)": FunctionFragment;
     "currency()": FunctionFragment;
     "fee()": FunctionFragment;
@@ -53,10 +52,6 @@ interface EpoxyInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "burn",
     values: [string, BigNumberish[], BigNumberish[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "c_0x130b8ebd",
-    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "created",
@@ -123,10 +118,6 @@ interface EpoxyInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0x130b8ebd",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "created", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "currency", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "fee", data: BytesLike): Result;
@@ -238,11 +229,6 @@ export class Epoxy extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    c_0x130b8ebd(
-      c__0x130b8ebd: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
     created(id: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
 
     currency(overrides?: CallOverrides): Promise<[string]>;
@@ -337,11 +323,6 @@ export class Epoxy extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  c_0x130b8ebd(
-    c__0x130b8ebd: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   created(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
   currency(overrides?: CallOverrides): Promise<string>;
@@ -433,11 +414,6 @@ export class Epoxy extends BaseContract {
       account: string,
       ids: BigNumberish[],
       amounts: BigNumberish[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    c_0x130b8ebd(
-      c__0x130b8ebd: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -599,11 +575,6 @@ export class Epoxy extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    c_0x130b8ebd(
-      c__0x130b8ebd: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     created(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     currency(overrides?: CallOverrides): Promise<BigNumber>;
@@ -697,11 +668,6 @@ export class Epoxy extends BaseContract {
       ids: BigNumberish[],
       amounts: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    c_0x130b8ebd(
-      c__0x130b8ebd: BytesLike,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     created(
