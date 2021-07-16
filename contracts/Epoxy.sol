@@ -17,9 +17,9 @@ contract Epoxy is ERC1155 {
   error IsNotManager(address caller, uint256 id);
 
   // Epoxy base currency
-  IERC20 public currency;
+  IERC20 public immutable currency;
   // Epoxy base fee
-  uint256 public fee;
+  uint256 public immutable fee;
 
   // Epoxy allows individual sets to override the standard URI
   mapping(uint256 => string) private _uris;
